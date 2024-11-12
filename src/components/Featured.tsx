@@ -1,8 +1,31 @@
-import { featuredProducts } from "@/data";
+import { ProductType } from "@/types/types";
 import Image from "next/image";
 import React from "react";
+import ButtonAddCart from "./ButtonAddCart";
 
-const Featured = () => {
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+const getData = async () => {
+  try {
+    const response = await fetch(`${apiUrl}/products`, {
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      throw new Error(`Error fetching data: ${response.statusText}`);
+    }
+    const data = await response.json();
+    console.log(data.products);
+    return data.products || [];
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return [];
+  }
+};
+
+const Featured = async () => {
+
+  const featuredProducts:ProductType[] = await getData()
+
   return (
     <div className="w-screen overflow-x-scroll text-red-500">
       {/* WRAPPER */}
@@ -25,7 +48,7 @@ const Featured = () => {
               <p className="p-4 2xl:p-8">{item.desc}</p>
               <span className="text-xl font-bold">${item.price}</span>
               <button className="bg-red-500 text-white p-2 rounded-md">
-                Add to Cart
+                Añadir al carrito
               </button>
             </div>
           </div>
@@ -33,6 +56,6 @@ const Featured = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Featured;
